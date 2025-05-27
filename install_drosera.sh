@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# به‌روزرسانی و نصب پیش‌نیازها
+# Update and install prerequisites
 sudo apt-get update && sudo apt-get upgrade -y
 sudo apt install -y curl ufw iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev ca-certificates gnupg lsb-release
 
-# نصب Docker
+# Install Docker
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -13,37 +13,37 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# نصب Drosera CLI
+# Install Drosera CLI
 curl -L https://app.drosera.io/install | bash
 source /root/.bashrc
 droseraup
 
-# نصب Foundry
+# Install Foundry
 curl -L https://foundry.paradigm.xyz | bash
 source /root/.bashrc
 foundryup
 
-# نصب Bun
+# Install Bun
 curl -fsSL https://bun.sh/install | bash
 source /root/.bashrc
 
-# درخواست اطلاعات از کاربر
-echo "لطفاً آدرس ایمیل خود را وارد کنید:"
+# Request information from the user
+echo "Please enter your email address:"
 read user_email
 
-echo "لطفاً نام کاربری گیت‌هاب خود را وارد کنید:"
+echo "Please enter your GitHub username:"
 read github_username
 
-echo "لطفاً کلید خصوصی Drosera خود را وارد کنید:"
+echo "Please enter your Drosera private key:"
 read drosera_private_key
 
-echo "لطفاً کلید خصوصی EVM خود را وارد کنید:"
+echo "Please enter your EVM private key:"
 read evm_private_key
 
-echo "لطفاً آدرس IP عمومی VPS خود را وارد کنید:"
+echo "Please enter your VPS public IP address:"
 read vps_ip
 
-# راه‌اندازی پروژه Drosera Trap
+# Set up Drosera Trap project
 mkdir my-drosera-trap
 cd my-drosera-trap
 git config --global user.email "$user_email"
@@ -53,30 +53,30 @@ curl -fsSL https://bun.sh/install | bash
 bun install
 forge build
 
-# اعمال Trap
+# Apply Trap
 DROSERA_PRIVATE_KEY="$drosera_private_key" drosera apply
 
-# راه‌اندازی Drosera Operator
+# Set up Drosera Operator
 curl -LO https://github.com/drosera-network/releases/releases/download/v1.16.2/drosera-operator-v1.16.2-x86_64-unknown-linux-gnu.tar.gz
 tar -xvf drosera-operator-v1.16.2-x86_64-unknown-linux-gnu.tar.gz
 ./drosera-operator --version
 sudo cp drosera-operator /usr/bin
 drosera-operator
 
-# ثبت‌نام در Drosera Operator
+# Register with Drosera Operator
 drosera-operator register --eth-rpc-url https://ethereum-holesky-rpc.publicnode.com --eth-private-key "$drosera_private_key"
 
-# راه‌اندازی Drosera Network
+# Set up Drosera Network
 git clone https://github.com/0xmoei/Drosera-Network
 cd Drosera-Network
 cp .env.example .env
 
-# ویرایش فایل .env با مقادیر وارد شده توسط کاربر
+# Edit the .env file with the values entered by the user
 sed -i "s/your_evm_private_key/$evm_private_key/" .env
 sed -i "s/your_vps_public_ip/$vps_ip/" .env
 
 docker compose up -d
 
-# مشاهده لاگ‌ها
+# View logs
 cd Drosera-Network
 docker compose logs -f
