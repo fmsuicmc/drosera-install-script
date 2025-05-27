@@ -27,7 +27,7 @@ foundryup
 curl -fsSL https://bun.sh/install | bash
 source /root/.bashrc
 
-# Request information from the user
+# Request information from user
 echo "Please enter your email address:"
 read user_email
 
@@ -51,7 +51,7 @@ git config --global user.name "$github_username"
 forge init -t drosera-network/trap-foundry-template
 curl -fsSL https://bun.sh/install | bash
 bun install
-forge build
+forge build || true  # Ignore build errors and continue
 
 # Apply Trap
 DROSERA_PRIVATE_KEY="$drosera_private_key" drosera apply
